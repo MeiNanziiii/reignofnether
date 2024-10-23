@@ -45,7 +45,7 @@ public class EvokerProd extends ProductionItem {
             hotkey,
             () -> false,
             () -> false,
-            () -> BuildingClientEvents.hasFinishedBuilding(Library.buildingName),
+            () -> BuildingClientEvents.hasFinishedBuilding(Library.structureName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(

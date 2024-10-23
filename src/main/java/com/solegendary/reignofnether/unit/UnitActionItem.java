@@ -13,12 +13,10 @@ import com.solegendary.reignofnether.unit.interfaces.ConvertableUnit;
 import com.solegendary.reignofnether.unit.interfaces.Unit;
 import com.solegendary.reignofnether.unit.interfaces.WorkerUnit;
 import com.solegendary.reignofnether.util.MiscUtil;
-import com.solegendary.reignofnether.util.MyMath;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.lwjgl.system.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -219,7 +217,7 @@ public class UnitActionItem {
                             goal.setTargetResourceName(ResourceName.FOOD);
                             goal.setMoveTarget(preselectedBlockPos);
                             Building building = BuildingUtils.findBuilding(level.isClientSide(), preselectedBlockPos);
-                            if (building != null && building.name.contains(" Farm")) {
+                            if (building != null && building.id.contains("_farm")) {
                                 goal.setTargetFarm(building);
                                 if (Unit.atMaxResources((Unit) workerUnit)) {
                                     if (level.isClientSide())

@@ -15,7 +15,6 @@ import com.solegendary.reignofnether.nether.NetherBlocks;
 import com.solegendary.reignofnether.orthoview.OrthoviewClientEvents;
 import com.solegendary.reignofnether.research.ResearchClient;
 import com.solegendary.reignofnether.research.researchItems.ResearchAdvancedPortals;
-import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.tutorial.TutorialClientEvents;
 import com.solegendary.reignofnether.unit.Relationship;
 import com.solegendary.reignofnether.unit.UnitClientEvents;
@@ -116,7 +115,7 @@ public class BuildingClientEvents {
             return;
 
         selectedBuildings.add(building);
-        selectedBuildings.sort(Comparator.comparing(b -> b.name));
+        selectedBuildings.sort(Comparator.comparing(b -> b.id));
         UnitClientEvents.clearSelectedUnits();
     }
 
@@ -347,12 +346,12 @@ public class BuildingClientEvents {
     }
 
     private static boolean isNonPiglinOrOnNetherBlocks(BlockPos originPos) {
-        String buildingName = buildingToPlace.getName().toLowerCase();
-        if (buildingName.contains("bridge"))
+        String structureName = buildingToPlace.getName().toLowerCase();
+        if (structureName.contains("bridge"))
             return true;
-        if (!buildingName.contains("buildings.piglins.") || buildingName.contains("centralportal"))
+        if (!structureName.contains("buildings.piglins.") || structureName.contains("centralportal"))
             return true;
-        if (buildingName.contains("portal") && ResearchClient.hasResearch(ResearchAdvancedPortals.itemName))
+        if (structureName.contains("portal") && ResearchClient.hasResearch(ResearchAdvancedPortals.itemName))
             return true;
 
         int netherBlocksBelow = 0;
@@ -627,7 +626,7 @@ public class BuildingClientEvents {
 
             // place a new building
             if (buildingToPlace != null && isBuildingPlacementValid(pos) && MC.player != null) {
-                String buildingName = (String) buildingToPlace.getField("buildingName").get(null);
+                String structureName = (String) buildingToPlace.getField("id").get(null);
 
                 ArrayList<Integer> builderIds = new ArrayList<>();
                 for (LivingEntity builderEntity : getSelectedUnits())
@@ -635,7 +634,7 @@ public class BuildingClientEvents {
                         builderIds.add(builderEntity.getId());
 
                 if (Keybindings.shiftMod.isDown()) {
-                    BuildingServerboundPacket.placeAndQueueBuilding(buildingName,
+                    BuildingServerboundPacket.placeAndQueueBuilding(structureName,
                             isBuildingToPlaceABridge() && bridgePlaceState == 2 ? pos.offset(-5,0,-5) : pos,
                             buildingRotation, MC.player.getName().getString(),
                             builderIds.stream().mapToInt(i -> i).toArray(), isBridgeDiagonal());
@@ -649,7 +648,7 @@ public class BuildingClientEvents {
                         }
                     }
                 } else {
-                    BuildingServerboundPacket.placeBuilding(buildingName,
+                    BuildingServerboundPacket.placeBuilding(structureName,
                             isBuildingToPlaceABridge() && bridgePlaceState == 2 ? pos.offset(-5,0,-5) : pos,
                             buildingRotation, MC.player.getName().getString(),
                             builderIds.stream().mapToInt(i -> i).toArray(), isBridgeDiagonal());
@@ -678,7 +677,7 @@ public class BuildingClientEvents {
                     ArrayList<Building> nearbyBuildings = getBuildingsWithinRange(
                             new Vec3(centre.getX(), centre.getY(), centre.getZ()),
                             OrthoviewClientEvents.getZoom() * 2,
-                            selBuilding.name
+                            selBuilding.id
                     );
                     clearSelectedBuildings();
                     for (Building building : nearbyBuildings)
@@ -806,10 +805,10 @@ public class BuildingClientEvents {
         }
     }
 
-    public static ArrayList<Building> getBuildingsWithinRange(Vec3 pos, float range, String buildingName) {
+    public static ArrayList<Building> getBuildingsWithinRange(Vec3 pos, float range, String structureName) {
         ArrayList<Building> retBuildings = new ArrayList<>();
         for (Building building : buildings) {
-            if (building.name.equals(buildingName)) {
+            if (building.id.equals(structureName)) {
                 BlockPos centre = building.centrePos;
                 Vec3 centreVec3 = new Vec3(centre.getX(), centre.getY(), centre.getZ());
                 if (pos.distanceTo(centreVec3) <= range)
@@ -820,11 +819,11 @@ public class BuildingClientEvents {
     }
 
     // place a building clientside that has already been registered on serverside
-    public static void placeBuilding(String buildingName, BlockPos pos, Rotation rotation, String ownerName,
+    public static void placeBuilding(String structureName, BlockPos pos, Rotation rotation, String ownerName,
                                      int numBlocksToPlace, boolean isDiagonalBridge, boolean isUpgraded,
                                      boolean isBuilt, Portal.PortalType portalType, boolean forPlayerLoggingIn) {
 
-        Building newBuilding = BuildingUtils.getNewBuilding(buildingName, MC.level, pos, rotation, ownerName, isDiagonalBridge);
+        Building newBuilding = BuildingUtils.getNewBuilding(structureName, MC.level, pos, rotation, ownerName, isDiagonalBridge);
 
         for (Building building : buildings)
             if (newBuilding.originPos.equals(building.originPos))
@@ -888,9 +887,9 @@ public class BuildingClientEvents {
     }
 
     // does the player own one of these buildings?
-    public static boolean hasFinishedBuilding(String buildingName) {
+    public static boolean hasFinishedBuilding(String structureName) {
         for (Building building : buildings)
-            if (building.name.equals(buildingName) && building.isBuilt && MC.player != null &&
+            if (building.id.equals(structureName) && building.isBuilt && MC.player != null &&
                 building.ownerName.equals(MC.player.getName().getString()))
                 return true;
         return false;

@@ -35,7 +35,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.RegistryObject;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -315,7 +314,7 @@ public class TutorialClientEvents {
     private static boolean hasBuildingSelected(String buildingName) {
         return BuildingClientEvents.getSelectedBuildings().size() > 0 &&
                 BuildingClientEvents.getSelectedBuildings().get(0)
-                .name.toLowerCase().equals(buildingName.toLowerCase());
+                .id.toLowerCase().equals(buildingName.toLowerCase());
     }
 
     // Whenever doing anything that could be a tutorial action like enabling orthoview or building your first building,
@@ -343,7 +342,7 @@ public class TutorialClientEvents {
                     msg("If at any point you're lost or need a reminder on what to do next, click the button at the " +
                         "top right. Try doing that now to continue.");
                     setHelpButtonText("You needed to click this button, which you just did. Great work!");
-                    TutorialRendering.setButtonName(helpButton.name);
+                    TutorialRendering.setButtonName(helpButton.name.getString());
                     progressStage();
                 }
                 else if (stageProgress == 3 && helpButtonClicks > 0) {
@@ -556,7 +555,7 @@ public class TutorialClientEvents {
                         "ground where you want to place your capitol.");
                     setHelpButtonText("Select your workers, then click the bottom-left button and click on the " +
                                       "ground to place a town centre.");
-                    TutorialRendering.setButtonName(TownCentre.buildingName);
+                    TutorialRendering.setButtonName(TownCentre.structureName);
                     progressStage();
                 }
                 else if (stageProgress == 1 && BuildingClientEvents.getBuildings().size() > 0) {
@@ -800,23 +799,23 @@ public class TutorialClientEvents {
                     progressStageAfterDelay(140);
                 }
                 else if (stageProgress == 1 && hasUnitSelected("villager")) {
-                    TutorialRendering.setButtonName(OakStockpile.buildingName);
+                    TutorialRendering.setButtonName(OakStockpile.structureName);
                     msg("Stockpiles can give your workers a place to drop off resources faster.");
                     progressStageAfterDelay(160);
                 }
                 else if (stageProgress == 2 && hasUnitSelected("villager")) {
-                    TutorialRendering.setButtonName(VillagerHouse.buildingName);
+                    TutorialRendering.setButtonName(VillagerHouse.structureName);
                     msg("Houses raise your max unit population. Check the top left for your current totals.");
                     progressStageAfterDelay(160);
                 }
                 else if (stageProgress == 3 && hasUnitSelected("villager")) {
-                    TutorialRendering.setButtonName(WheatFarm.buildingName);
+                    TutorialRendering.setButtonName(WheatFarm.structureName);
                     msg("Farms give you a slow but renewable source of food in exchange for wood.");
                     progressStageAfterDelay(160);
                 }
                 else if (stageProgress == 4 && hasUnitSelected("villager")) {
                     clearHelpButtonText();
-                    TutorialRendering.setButtonName(Barracks.buildingName);
+                    TutorialRendering.setButtonName(Barracks.structureName);
                     msg("Finally, a barracks lets you start training soldiers to fight enemies.");
                     progressStageAfterDelay(160);
                 }
@@ -857,12 +856,12 @@ public class TutorialClientEvents {
                             !(BuildingClientEvents.getSelectedBuildings().get(0) instanceof Barracks);
                     progressStageAfterDelay(140);
                 }
-                else if (stageProgress == 1 && hasBuildingSelected(Barracks.buildingName)) {
+                else if (stageProgress == 1 && hasBuildingSelected(Barracks.structureName)) {
                     TutorialRendering.setButtonName(VindicatorProd.itemName);
                     msg("Vindicators are melee units with high health and moderate damage.");
                     progressStageAfterDelay(160);
                 }
-                else if (stageProgress == 2 && hasBuildingSelected(Barracks.buildingName)) {
+                else if (stageProgress == 2 && hasBuildingSelected(Barracks.structureName)) {
                     clearHelpButtonText();
                     TutorialRendering.setButtonName(PillagerProd.itemName);
                     msg("Pillagers are ranged units which attack slowly but with high damage.");

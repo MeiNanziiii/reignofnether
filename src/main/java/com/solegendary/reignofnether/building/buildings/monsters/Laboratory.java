@@ -12,6 +12,7 @@ import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.ability.abilities.CallLightning;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -27,14 +28,13 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Laboratory extends ProductionBuilding {
 
-    public final static String buildingName = "Laboratory";
     public final static String structureName = "laboratory";
     public final static String upgradedStructureName = "laboratory_lightning";
     public final static ResourceCost cost = ResourceCosts.LABORATORY;
 
     public Laboratory(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.BREWING_STAND;
         this.icon = new ResourceLocation("minecraft", "textures/block/brewing_stand.png");
@@ -101,23 +101,23 @@ public class Laboratory extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            Laboratory.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/brewing_stand.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == Laboratory.class,
             () -> false,
-            () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(Laboratory.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(Laboratory.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("A sinister lab that can research new technologies", Style.EMPTY),
-                FormattedCharSequence.forward("based on the other buildings that have been built.", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

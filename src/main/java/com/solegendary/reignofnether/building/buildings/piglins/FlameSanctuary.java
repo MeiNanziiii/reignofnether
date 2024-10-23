@@ -15,6 +15,7 @@ import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -35,13 +36,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class FlameSanctuary extends ProductionBuilding {
 
-    public final static String buildingName = "Flame Sanctuary";
     public final static String structureName = "flame_sanctuary";
     public final static ResourceCost cost = ResourceCosts.FLAME_SANCTUARY;
 
     public FlameSanctuary(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.MAGMA_BLOCK;
         this.icon = new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/magma.png");
@@ -71,25 +71,23 @@ public class FlameSanctuary extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            FlameSanctuary.buildingName,
+            getKey(structureName),
             new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/magma.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == FlameSanctuary.class,
             () -> false,
-            () -> BuildingClientEvents.hasFinishedBuilding(HoglinStables.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(HoglinStables.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(FlameSanctuary.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(FlameSanctuary.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Scorching pillars of lava and brick to keep blazes,", Style.EMPTY),
-                FormattedCharSequence.forward("enabling their production at military portals.", Style.EMPTY),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Requires Hoglin Stables.", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

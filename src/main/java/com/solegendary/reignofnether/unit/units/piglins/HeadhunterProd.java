@@ -59,7 +59,7 @@ public class HeadhunterProd extends ProductionItem {
                 hotkey,
                 () -> false,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(Bastion.buildingName),
+                () -> BuildingClientEvents.hasFinishedBuilding(Bastion.structureName),
                 () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
                 null,
                 tooltipLines

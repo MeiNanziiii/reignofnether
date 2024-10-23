@@ -10,6 +10,7 @@ import com.solegendary.reignofnether.util.MiscUtil;
 import com.solegendary.reignofnether.util.MyRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
@@ -28,7 +29,7 @@ public class Button {
 
     public static final int itemIconSize = 14;
 
-    public String name;
+    public Component name;
     public int x; // top left
     public int y;
     int iconSize;
@@ -65,7 +66,7 @@ public class Button {
     Minecraft MC = Minecraft.getInstance();
 
     // constructor for ability/action/production buttons
-    public Button(String name, int iconSize, ResourceLocation iconRl, @Nullable Keybinding hotkey, Supplier<Boolean> isSelected,
+    public Button(Component name, int iconSize, ResourceLocation iconRl, @Nullable Keybinding hotkey, Supplier<Boolean> isSelected,
                   Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, @Nullable Runnable onLeftClick,
                   @Nullable Runnable onRightClick, @Nullable List<FormattedCharSequence> tooltipLines) {
         this.name = name;
@@ -81,7 +82,7 @@ public class Button {
     }
 
     // constructor for ability/action/production buttons with non-default frame
-    public Button(String name, int iconSize, ResourceLocation iconRl, ResourceLocation frameRl, @Nullable Keybinding hotkey, Supplier<Boolean> isSelected,
+    public Button(Component name, int iconSize, ResourceLocation iconRl, ResourceLocation frameRl, @Nullable Keybinding hotkey, Supplier<Boolean> isSelected,
                   Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, @Nullable Runnable onLeftClick,
                   @Nullable Runnable onRightClick, @Nullable List<FormattedCharSequence> tooltipLines) {
         this.name = name;
@@ -98,7 +99,7 @@ public class Button {
     }
 
     // constructor for unit selection buttons
-    public Button(String name, int iconSize, ResourceLocation iconRl, LivingEntity entity, Supplier<Boolean> isSelected,
+    public Button(Component name, int iconSize, ResourceLocation iconRl, LivingEntity entity, Supplier<Boolean> isSelected,
                   Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, @Nullable Runnable onLeftClick,
                   @Nullable Runnable onRightClick, @Nullable List<FormattedCharSequence> tooltipLines) {
         this.name = name;
@@ -114,10 +115,74 @@ public class Button {
     }
 
     // constructor for building selection buttons
-    public Button(String name, int iconSize, ResourceLocation iconRl, Building building, Supplier<Boolean> isSelected,
+    public Button(Component name, int iconSize, ResourceLocation iconRl, Building building, Supplier<Boolean> isSelected,
                   Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, @Nullable Runnable onLeftClick,
                   @Nullable Runnable onRightClick, @Nullable List<FormattedCharSequence> tooltipLines) {
         this.name = name;
+        this.iconResource = iconRl;
+        this.iconSize = iconSize;
+        this.building = building;
+        this.isSelected = isSelected;
+        this.isHidden = isHidden;
+        this.isEnabled = isEnabled;
+        this.onLeftClick = onLeftClick;
+        this.onRightClick = onRightClick;
+        this.tooltipLines = tooltipLines;
+    }
+
+    public Button(String name, int iconSize, ResourceLocation iconRl, @Nullable Keybinding hotkey, Supplier<Boolean> isSelected,
+                  Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, @Nullable Runnable onLeftClick,
+                  @Nullable Runnable onRightClick, @Nullable List<FormattedCharSequence> tooltipLines) {
+        this.name = Component.literal(name);
+        this.iconResource = iconRl;
+        this.iconSize = iconSize;
+        this.hotkey = hotkey;
+        this.isSelected = isSelected;
+        this.isHidden = isHidden;
+        this.isEnabled = isEnabled;
+        this.onLeftClick = onLeftClick;
+        this.onRightClick = onRightClick;
+        this.tooltipLines = tooltipLines;
+    }
+
+    // constructor for ability/action/production buttons with non-default frame
+    public Button(String name, int iconSize, ResourceLocation iconRl, ResourceLocation frameRl, @Nullable Keybinding hotkey, Supplier<Boolean> isSelected,
+                  Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, @Nullable Runnable onLeftClick,
+                  @Nullable Runnable onRightClick, @Nullable List<FormattedCharSequence> tooltipLines) {
+        this.name = Component.literal(name);
+        this.iconResource = iconRl;
+        this.frameResource = frameRl;
+        this.iconSize = iconSize;
+        this.hotkey = hotkey;
+        this.isSelected = isSelected;
+        this.isHidden = isHidden;
+        this.isEnabled = isEnabled;
+        this.onLeftClick = onLeftClick;
+        this.onRightClick = onRightClick;
+        this.tooltipLines = tooltipLines;
+    }
+
+    // constructor for unit selection buttons
+    public Button(String name, int iconSize, ResourceLocation iconRl, LivingEntity entity, Supplier<Boolean> isSelected,
+                  Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, @Nullable Runnable onLeftClick,
+                  @Nullable Runnable onRightClick, @Nullable List<FormattedCharSequence> tooltipLines) {
+        this.name = Component.literal(name);
+        this.iconResource = iconRl;
+        this.iconSize = iconSize;
+        this.entity = entity;
+        this.isSelected = isSelected;
+        this.isHidden = isHidden;
+        this.isEnabled = isEnabled;
+        this.onLeftClick = onLeftClick;
+        this.onRightClick = onRightClick;
+        this.tooltipLines = tooltipLines;
+    }
+
+    // constructor for building selection buttons
+    public Button(String name, int iconSize, ResourceLocation iconRl, Building building, Supplier<Boolean> isSelected,
+                  Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, @Nullable Runnable onLeftClick,
+                  @Nullable Runnable onRightClick, @Nullable List<FormattedCharSequence> tooltipLines) {
+        this.name = Component.literal(name);
         this.iconResource = iconRl;
         this.iconSize = iconSize;
         this.building = building;

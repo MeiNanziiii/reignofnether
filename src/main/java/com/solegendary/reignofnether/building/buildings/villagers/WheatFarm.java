@@ -11,6 +11,7 @@ import com.solegendary.reignofnether.tutorial.TutorialStage;
 import com.solegendary.reignofnether.util.Faction;
 import com.solegendary.reignofnether.util.MyRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -26,7 +27,6 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class WheatFarm extends Building {
 
-    public final static String buildingName = "Wheat Farm";
     public final static String structureName = "wheat_farm";
     public final static ResourceCost cost = ResourceCosts.WHEAT_FARM;
 
@@ -35,7 +35,7 @@ public class WheatFarm extends Building {
 
     public WheatFarm(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.HAY_BLOCK;
         this.icon = new ResourceLocation("minecraft", "textures/block/hay_block_side.png");
@@ -57,23 +57,23 @@ public class WheatFarm extends Building {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                FormattedCharSequence.forward("\uE001  " + cost.wood + "  +  " + ResourceCosts.REPLANT_WOOD_COST + "  per  crop  planted", MyRenderer.iconStyle),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                WheatFarm.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/hay_block_side.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == WheatFarm.class,
                 () -> !TutorialClientEvents.isAtOrPastStage(TutorialStage.EXPLAIN_BUILDINGS),
-                () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(WheatFarm.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(WheatFarm.buildingName, Style.EMPTY.withBold(true)),
-                        FormattedCharSequence.forward("\uE001  " + cost.wood + "  +  " + ResourceCosts.REPLANT_WOOD_COST + "  per  crop  planted", MyRenderer.iconStyle),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A wheat field that be can tilled to collect food.", Style.EMPTY),
-                        FormattedCharSequence.forward("Workers automatically use wood to replant seeds while working.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

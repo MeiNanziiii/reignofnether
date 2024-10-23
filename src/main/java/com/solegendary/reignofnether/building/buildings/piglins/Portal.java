@@ -19,6 +19,7 @@ import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.unit.units.piglins.*;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -45,16 +46,12 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
         TRANSPORT
     }
 
-    public final static String buildingName = "Basic Portal";
     public final static String structureName = "portal_basic";
 
-    public final static String buildingNameCivilian = "Civilian Portal";
     public final static String structureNameCivilian = "portal_civilian";
 
-    public final static String buildingNameMilitary = "Military Portal";
     public final static String structureNameMilitary = "portal_military";
 
-    public final static String buildingNameTransport = "Transport Portal";
     public final static String structureNameTransport = "portal_transport";
 
     public final static ResourceCost cost = ResourceCosts.BASIC_PORTAL;
@@ -94,7 +91,7 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
 
     public Portal(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.GRAY_GLAZED_TERRACOTTA;
         this.icon = new ResourceLocation("minecraft", "textures/block/gray_glazed_terracotta.png");
@@ -167,7 +164,7 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
         String newStructureName = "";
         switch (portalType) {
             case CIVILIAN -> {
-                this.name = buildingNameCivilian;
+                this.id = structureNameCivilian;
                 this.portraitBlock = Blocks.CYAN_GLAZED_TERRACOTTA;
                 this.icon = new ResourceLocation("minecraft", "textures/block/cyan_glazed_terracotta.png");
                 newStructureName = structureNameCivilian;
@@ -180,7 +177,7 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
                 }
             }
             case MILITARY -> {
-                this.name = buildingNameMilitary;
+                this.id = structureNameMilitary;
                 this.portraitBlock = Blocks.RED_GLAZED_TERRACOTTA;
                 this.icon = new ResourceLocation("minecraft", "textures/block/red_glazed_terracotta.png");
                 newStructureName = structureNameMilitary;
@@ -196,7 +193,7 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
                     );
             }
             case TRANSPORT -> {
-                this.name = buildingNameTransport;
+                this.id = structureNameTransport;
                 this.portraitBlock = Blocks.BLUE_GLAZED_TERRACOTTA;
                 this.icon = new ResourceLocation("minecraft", "textures/block/blue_glazed_terracotta.png");
                 newStructureName = structureNameTransport;
@@ -220,23 +217,23 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                Portal.buildingName,
+                getKey(structureName),
                 new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/portal.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == Portal.class,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(CentralPortal.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(CentralPortal.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(Portal.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(Portal.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("An obsidian portal used to spread nether blocks.", Style.EMPTY),
-                        FormattedCharSequence.forward("Can be upgraded for various different functions.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

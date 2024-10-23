@@ -15,6 +15,7 @@ import com.solegendary.reignofnether.tutorial.TutorialStage;
 import com.solegendary.reignofnether.unit.units.villagers.IronGolemProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -30,13 +31,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Blacksmith extends ProductionBuilding {
 
-    public final static String buildingName = "Blacksmith";
     public final static String structureName = "blacksmith";
     public final static ResourceCost cost = ResourceCosts.BLACKSMITH;
 
     public Blacksmith(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.SMITHING_TABLE;
         this.icon = new ResourceLocation("minecraft", "textures/block/smithing_table_front.png");
@@ -66,24 +66,23 @@ public class Blacksmith extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                Blacksmith.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/smithing_table_front.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == Blacksmith.class,
                 () -> !TutorialClientEvents.isAtOrPastStage(TutorialStage.ATTACK_ENEMY_BASE),
-                () -> BuildingClientEvents.hasFinishedBuilding(Barracks.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(Barracks.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(Blacksmith.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(Blacksmith.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A smithy to forge military upgrades and iron golems.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Requires a Barracks.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

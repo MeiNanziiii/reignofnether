@@ -3,6 +3,7 @@ package com.solegendary.reignofnether.hud;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.solegendary.reignofnether.keybinds.Keybinding;
 import com.solegendary.reignofnether.ability.Ability;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -16,12 +17,29 @@ public class AbilityButton extends Button {
     // or simple abilities with no cooldown and the logic can be handled entirely in onLeftClick()
     public Ability ability;
 
-    public AbilityButton(String name, ResourceLocation rl, Keybinding hotkey, Supplier<Boolean> isSelected,
+    public AbilityButton(Component name, ResourceLocation rl, Keybinding hotkey, Supplier<Boolean> isSelected,
                          Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, Runnable onLeftClick, Runnable onRightClick,
                          List<FormattedCharSequence> tooltipLines, @Nullable Ability ability) {
 
         // generate x/y based on given position (starting at 0 which is bottom left 1 row above generic action buttons)
         super(name, Button.itemIconSize, rl, hotkey, isSelected, isHidden, isEnabled, onLeftClick, onRightClick, tooltipLines);
+
+        this.ability = ability;
+
+        Runnable originalOnLeftClick = this.onLeftClick;
+        this.onLeftClick = () -> {
+            if (this.ability != null && (this.ability.getCooldown() > 0 && !this.ability.canBypassCooldown()))
+                HudClientEvents.showTemporaryMessage("This ability is still on cooldown");
+            else
+                originalOnLeftClick.run();
+        };
+    }
+    public AbilityButton(String name, ResourceLocation rl, Keybinding hotkey, Supplier<Boolean> isSelected,
+                         Supplier<Boolean> isHidden, Supplier<Boolean> isEnabled, Runnable onLeftClick, Runnable onRightClick,
+                         List<FormattedCharSequence> tooltipLines, @Nullable Ability ability) {
+
+        // generate x/y based on given position (starting at 0 which is bottom left 1 row above generic action buttons)
+        super(Component.literal(name), Button.itemIconSize, rl, hotkey, isSelected, isHidden, isEnabled, onLeftClick, onRightClick, tooltipLines);
 
         this.ability = ability;
 

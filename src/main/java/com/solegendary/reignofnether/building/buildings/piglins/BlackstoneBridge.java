@@ -4,17 +4,15 @@ import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.building.BuildingBlock;
 import com.solegendary.reignofnether.building.BuildingBlockData;
 import com.solegendary.reignofnether.building.BuildingClientEvents;
-import com.solegendary.reignofnether.building.buildings.monsters.Mausoleum;
 import com.solegendary.reignofnether.building.buildings.shared.AbstractBridge;
-import com.solegendary.reignofnether.building.buildings.villagers.TownCentre;
 import com.solegendary.reignofnether.hud.AbilityButton;
 import com.solegendary.reignofnether.keybinds.Keybinding;
 import com.solegendary.reignofnether.research.ResearchClient;
 import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
-import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -30,7 +28,7 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class BlackstoneBridge extends AbstractBridge {
 
-    public final static String buildingName = "Blackstone Bridge";
+    public final static String structureName = "bridge_blackstone";
     public final static String structureNameOrthogonal = "bridge_blackstone_orthogonal";
     public final static String structureNameDiagonal = "bridge_blackstone_diagonal";
     public final static ResourceCost cost = ResourceCosts.BLACKSTONE_BRIDGE;
@@ -39,7 +37,7 @@ public class BlackstoneBridge extends AbstractBridge {
         super(level, originPos, rotation, ownerName, diagonal,
                 getCulledBlocks(getAbsoluteBlockData(getRelativeBlockData(level, diagonal), level, originPos, rotation), level));
 
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.NETHER_BRICK_FENCE;
         this.icon = new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/netherbrick_fence.png");
@@ -58,26 +56,23 @@ public class BlackstoneBridge extends AbstractBridge {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
-        Minecraft MC = Minecraft.getInstance();
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                BlackstoneBridge.buildingName,
+                getKey(structureName),
                 new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/netherbrick_fence.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == BlackstoneBridge.class,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(CentralPortal.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(CentralPortal.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(BlackstoneBridge.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(BlackstoneBridge.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A bridge built to traverse water or lava.", Style.EMPTY),
-                        FormattedCharSequence.forward("Must be connected to land or another bridge.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Bridges can be repaired or attacked by anyone.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

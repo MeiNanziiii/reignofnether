@@ -4,17 +4,15 @@ import com.solegendary.reignofnether.building.*;
 import com.solegendary.reignofnether.keybinds.Keybinding;
 import com.solegendary.reignofnether.keybinds.Keybindings;
 import com.solegendary.reignofnether.resources.ResourceCost;
-import com.solegendary.reignofnether.unit.UnitServerEvents;
-import com.solegendary.reignofnether.unit.interfaces.Unit;
 import com.solegendary.reignofnether.unit.units.monsters.ZombieVillagerProd;
 import com.solegendary.reignofnether.hud.AbilityButton;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -26,14 +24,13 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Mausoleum extends ProductionBuilding {
 
-    public final static String buildingName = "Mausoleum";
     public final static String structureName = "mausoleum";
     public final static ResourceCost cost = ResourceCosts.MAUSOLEUM;
     public final static int nightRange = 80;
 
     public Mausoleum(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), true);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.blocks = getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation);
         this.portraitBlock = Blocks.DEEPSLATE_TILES;
@@ -64,8 +61,15 @@ public class Mausoleum extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                ResourceCosts.getFormattedPop(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName, nightRange));
         return new AbilityButton(
-            Mausoleum.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/deepslate_tiles.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == Mausoleum.class,
@@ -73,17 +77,7 @@ public class Mausoleum extends ProductionBuilding {
             () -> true,
             () -> BuildingClientEvents.setBuildingToPlace(Mausoleum.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(Mausoleum.buildingName + " (Capitol)", Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                ResourceCosts.getFormattedPop(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("A tomb of the dead that produces zombie villagers.", Style.EMPTY),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Distorts time to midnight within a " + nightRange + " block radius.", Style.EMPTY),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("You may only have one capitol building at any time.", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

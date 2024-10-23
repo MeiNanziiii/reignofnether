@@ -10,6 +10,7 @@ import com.solegendary.reignofnether.tutorial.TutorialClientEvents;
 import com.solegendary.reignofnether.tutorial.TutorialStage;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -24,13 +25,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class VillagerHouse extends Building {
 
-    public final static String buildingName = "Villager House";
     public final static String structureName = "villager_house";
     public final static ResourceCost cost = ResourceCosts.VILLAGER_HOUSE;
 
     public VillagerHouse(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.OAK_LOG;
         this.icon = new ResourceLocation("minecraft", "textures/block/oak_log.png");
@@ -53,23 +53,24 @@ public class VillagerHouse extends Building {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                ResourceCosts.getFormattedPop(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            VillagerHouse.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/oak_log.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == VillagerHouse.class,
             () -> !TutorialClientEvents.isAtOrPastStage(TutorialStage.EXPLAIN_BUILDINGS),
-            () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(VillagerHouse.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(VillagerHouse.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                ResourceCosts.getFormattedPop(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("A simple house that provides population supply.", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

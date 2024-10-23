@@ -60,7 +60,7 @@ public class BlazeProd extends ProductionItem {
                 hotkey,
                 () -> false,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(FlameSanctuary.buildingName),
+                () -> BuildingClientEvents.hasFinishedBuilding(FlameSanctuary.structureName),
                 () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
                 null,
                 tooltipLines

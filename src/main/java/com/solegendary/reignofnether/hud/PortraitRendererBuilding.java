@@ -38,7 +38,7 @@ class PortraitRendererBuilding {
     public RectZone render(PoseStack poseStack, int x, int y, Building building) {
         Relationship rs = BuildingClientEvents.getPlayerToBuildingRelationship(building);
 
-        String name = building.name;
+        String name = building.id;
 
         if (!building.isBuilt)
             name += " (" + (int) (building.getBlocksPlacedPercent() * 100) + "%)";

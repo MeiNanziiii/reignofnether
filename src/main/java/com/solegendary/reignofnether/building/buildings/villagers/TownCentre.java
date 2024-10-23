@@ -9,6 +9,7 @@ import com.solegendary.reignofnether.hud.AbilityButton;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -23,13 +24,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class TownCentre extends ProductionBuilding {
 
-    public final static String buildingName = "Town Centre";
     public final static String structureName = "town_centre";
     public final static ResourceCost cost = ResourceCosts.TOWN_CENTRE;
 
     public TownCentre(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), true);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.POLISHED_GRANITE;
         this.icon = new ResourceLocation("minecraft", "textures/block/polished_granite.png");
@@ -58,8 +58,15 @@ public class TownCentre extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                ResourceCosts.getFormattedPop(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                TownCentre.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/polished_granite.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == TownCentre.class,
@@ -67,15 +74,7 @@ public class TownCentre extends ProductionBuilding {
                 () -> true,
                 () -> BuildingClientEvents.setBuildingToPlace(TownCentre.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(TownCentre.buildingName + " (Capitol)", Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        ResourceCosts.getFormattedPop(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A gazebo at the centre of your village that produces villagers.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("You may only have one capitol building at any time.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

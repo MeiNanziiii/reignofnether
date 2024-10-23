@@ -193,16 +193,16 @@ public class HudClientEvents {
                     // mob head icon
 
                     buildingButtons.add(new Button(
-                            building.name,
+                            Building.getKey(building.id),
                             iconSize,
                             building.icon,
                             building,
-                            () -> hudSelectedBuilding.name.equals(building.name),
+                            () -> hudSelectedBuilding.id.equals(building.id),
                             () -> false,
                             () -> true,
                             () -> {
                                 // click to select this unit type as a group
-                                if (hudSelectedBuilding.name.equals(building.name)) {
+                                if (hudSelectedBuilding.id.equals(building.id)) {
                                     BuildingClientEvents.clearSelectedBuildings();
                                     BuildingClientEvents.addSelectedBuilding(building);
                                 } else { // select this one specific unit
@@ -242,14 +242,14 @@ public class HudClientEvents {
 
                                 Building building = selBuildings.get(i);
                                 Building nextBuilding = null;
-                                String buildingName = building.name;
+                                String buildingName = building.id;
 
                                 String nextBuildingName = null;
                                 numBuildings += 1;
 
                                 if (i < selBuildings.size() - 1) {
                                     nextBuilding = selBuildings.get(i + 1);
-                                    nextBuildingName = nextBuilding.name;
+                                    nextBuildingName = nextBuilding.id;
                                 }
                                 if (!buildingName.equals(nextBuildingName)) {
                                     tooltipLines.add(FormattedCharSequence.forward("x" + numBuildings + " " + buildingName, Style.EMPTY));

@@ -13,6 +13,7 @@ import com.solegendary.reignofnether.unit.units.villagers.PillagerProd;
 import com.solegendary.reignofnether.unit.units.villagers.VindicatorProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -28,13 +29,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Barracks extends ProductionBuilding {
 
-    public final static String buildingName = "Barracks";
     public final static String structureName = "barracks";
     public final static ResourceCost cost = ResourceCosts.BARRACKS;
 
     public Barracks(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.FLETCHING_TABLE;
         this.icon = new ResourceLocation("minecraft", "textures/block/fletching_table_front.png");
@@ -62,22 +62,23 @@ public class Barracks extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                Barracks.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/fletching_table_front.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == Barracks.class,
                 () -> !TutorialClientEvents.isAtOrPastStage(TutorialStage.EXPLAIN_BUILDINGS),
-                () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(Barracks.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(Barracks.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A training ground for Pillagers and Vindicators", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

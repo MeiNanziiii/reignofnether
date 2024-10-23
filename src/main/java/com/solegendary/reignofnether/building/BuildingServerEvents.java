@@ -11,7 +11,6 @@ import com.solegendary.reignofnether.fogofwar.FrozenChunkClientboundPacket;
 import com.solegendary.reignofnether.player.PlayerServerEvents;
 import com.solegendary.reignofnether.research.ResearchServerEvents;
 import com.solegendary.reignofnether.resources.*;
-import com.solegendary.reignofnether.tutorial.TutorialServerEvents;
 import com.solegendary.reignofnether.unit.Relationship;
 import com.solegendary.reignofnether.unit.UnitAction;
 import com.solegendary.reignofnether.unit.UnitServerEvents;
@@ -80,7 +79,7 @@ public class BuildingServerEvents {
             buildingData.buildings.add(new BuildingSave(
                     b.originPos,
                     serverLevel,
-                    b.name,
+                    b.id,
                     b.ownerName,
                     b.rotation,
                     b instanceof ProductionBuilding pb ? pb.getRallyPoint() : b.originPos,
@@ -118,7 +117,7 @@ public class BuildingServerEvents {
             ArrayList<BlockPos> placedNZs = new ArrayList<>();
 
             buildingData.buildings.forEach(b -> {
-                Building building = BuildingUtils.getNewBuilding(b.name, level, b.originPos, b.rotation, b.ownerName, b.isDiagonalBridge);
+                Building building = BuildingUtils.getNewBuilding(b.id, level, b.originPos, b.rotation, b.ownerName, b.isDiagonalBridge);
 
                 if (building != null) {
                     building.isBuilt = b.isBuilt;
@@ -141,10 +140,10 @@ public class BuildingServerEvents {
                             if (building.isPosInsideBuilding(nz.getOrigin())) {
                                 ncb.setNetherZone(nz);
                                 placedNZs.add(nz.getOrigin());
-                                System.out.println("loaded netherzone for: " + b.name + "|" + b.originPos);
+                                System.out.println("loaded netherzone for: " + b.id + "|" + b.originPos);
                                 break;
                             }
-                    System.out.println("loaded building in serverevents: " + b.name + "|" + b.originPos);
+                    System.out.println("loaded building in serverevents: " + b.id + "|" + b.originPos);
                 }
             });
             netherData.netherZones.forEach(nz -> {
@@ -162,12 +161,13 @@ public class BuildingServerEvents {
         saveBuildings();
     }
 
-    public static void placeBuilding(String buildingName, BlockPos pos, Rotation rotation, String ownerName,
+    public static void placeBuilding(String structureName, BlockPos pos, Rotation rotation, String ownerName,
                                      int[] builderUnitIds, boolean queue, boolean isDiagonalBridge) {
-        Building newBuilding = BuildingUtils.getNewBuilding(buildingName, serverLevel, pos, rotation, ownerName, isDiagonalBridge);
+        Building newBuilding = BuildingUtils.getNewBuilding(structureName, serverLevel, pos, rotation, ownerName, isDiagonalBridge);
         boolean buildingExists = buildings.stream().anyMatch(b -> b.originPos.equals(pos));
 
         if (newBuilding != null && !buildingExists) {
+
             // Handle special building (Iron Golem)
             if (newBuilding instanceof IronGolemBuilding) {
                 int currentPop = UnitServerEvents.getCurrentPopulation(serverLevel, ownerName);
@@ -190,6 +190,7 @@ public class BuildingServerEvents {
 
                 if (!(newBuilding instanceof AbstractBridge)) {
                     for (BuildingBlock block : newBuilding.blocks) {
+                        // place scaffolding underneath all solid blocks that don't have support
                         if (block.getBlockPos().getY() == minY && !block.getBlockState().isAir()) {
                             if (!placeScaffoldingUnder(block, newBuilding)) {
                                 // Abort if the scaffolding placement failed
@@ -204,7 +205,7 @@ public class BuildingServerEvents {
                                 newBuilding.startingBlockTypes.contains(block.getBlockState().getBlock()))
                         .forEach(newBuilding::addToBlockPlaceQueue);
 
-                BuildingClientboundPacket.placeBuilding(pos, buildingName, rotation, ownerName,
+                BuildingClientboundPacket.placeBuilding(pos, structureName, rotation, ownerName,
                         newBuilding.blockPlaceQueue.size(), isDiagonalBridge, false, false, Portal.PortalType.BASIC, false);
 
                 ResourcesServerEvents.addSubtractResources(new Resources(
@@ -342,9 +343,9 @@ public class BuildingServerEvents {
     }
 
     // does the player own one of these buildings?
-    public static boolean playerHasFinishedBuilding(String playerName, String buildingName) {
+    public static boolean playerHasFinishedBuilding(String playerName, String structureName) {
         for (Building building : buildings)
-            if (building.name.equals(buildingName) && building.isBuilt && building.ownerName.equals(playerName))
+            if (building.id.equals(structureName) && building.isBuilt && building.ownerName.equals(playerName))
                 return true;
         return false;
     }
@@ -357,7 +358,7 @@ public class BuildingServerEvents {
         for (Building building : buildings)
             BuildingClientboundPacket.placeBuilding(
                 building.originPos,
-                building.name,
+                building.id,
                 building.rotation,
                 building.ownerName,
                 building.blockPlaceQueue.size(),
@@ -557,7 +558,7 @@ public class BuildingServerEvents {
             if (building.originPos.equals(buildingPos)) {
                 BuildingClientboundPacket.placeBuilding(
                         building.originPos,
-                        building.name,
+                        building.id,
                         building.rotation,
                         building.ownerName,
                         building.blockPlaceQueue.size(),

@@ -61,7 +61,7 @@ public class WitherSkeletonProd extends ProductionItem {
                 hotkey,
                 () -> false,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(WitherShrine.buildingName),
+                () -> BuildingClientEvents.hasFinishedBuilding(WitherShrine.structureName),
                 () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
                 null,
                 tooltipLines

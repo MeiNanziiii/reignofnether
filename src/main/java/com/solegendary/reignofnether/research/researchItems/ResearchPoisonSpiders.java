@@ -67,7 +67,7 @@ public class ResearchPoisonSpiders extends ProductionItem {
             () -> false,
             () -> ProductionItem.itemIsBeingProduced(ResearchPoisonSpiders.itemName, prodBuilding.ownerName) ||
                     ResearchClient.hasResearch(ResearchPoisonSpiders.itemName),
-            () -> BuildingClientEvents.hasFinishedBuilding(SpiderLair.buildingName),
+            () -> BuildingClientEvents.hasFinishedBuilding(SpiderLair.structureName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(

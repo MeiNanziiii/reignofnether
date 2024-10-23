@@ -52,7 +52,7 @@ public class ResearchSpiderJockeys extends ProductionItem {
             () -> false,
             () -> ProductionItem.itemIsBeingProduced(ResearchSpiderJockeys.itemName, prodBuilding.ownerName) ||
                     ResearchClient.hasResearch(ResearchSpiderJockeys.itemName),
-            () -> BuildingClientEvents.hasFinishedBuilding(SpiderLair.buildingName),
+            () -> BuildingClientEvents.hasFinishedBuilding(SpiderLair.structureName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(

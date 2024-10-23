@@ -10,6 +10,7 @@ import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.unit.units.monsters.WardenProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -27,7 +28,6 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Stronghold extends ProductionBuilding implements GarrisonableBuilding {
 
-    public final static String buildingName = "Stronghold";
     public final static String structureName = "stronghold";
     public final static ResourceCost cost = ResourceCosts.STRONGHOLD;
     public final static int nightRange = 60;
@@ -36,7 +36,7 @@ public class Stronghold extends ProductionBuilding implements GarrisonableBuildi
 
     public Stronghold(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.REINFORCED_DEEPSLATE;
         this.icon = new ResourceLocation("minecraft", "textures/block/reinforced_deepslate_side.png");
@@ -75,29 +75,25 @@ public class Stronghold extends ProductionBuilding implements GarrisonableBuildi
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName, MAX_OCCUPANTS, nightRange));
         return new AbilityButton(
-            Stronghold.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/reinforced_deepslate_side.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == Stronghold.class,
             () -> false,
-            () -> (BuildingClientEvents.hasFinishedBuilding(Graveyard.buildingName) &&
-                    BuildingClientEvents.hasFinishedBuilding(SpiderLair.buildingName) &&
-                    BuildingClientEvents.hasFinishedBuilding(Dungeon.buildingName)) ||
+            () -> (BuildingClientEvents.hasFinishedBuilding(Graveyard.structureName) &&
+                    BuildingClientEvents.hasFinishedBuilding(SpiderLair.structureName) &&
+                    BuildingClientEvents.hasFinishedBuilding(Dungeon.structureName)) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(Stronghold.class),
             null,
-            List.of(
-                    FormattedCharSequence.forward(Stronghold.buildingName, Style.EMPTY.withBold(true)),
-                    ResourceCosts.getFormattedCost(cost),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("A villainous stronghold that can produce wardens ", Style.EMPTY),
-                    FormattedCharSequence.forward("and garrison up to " + MAX_OCCUPANTS + " units.", Style.EMPTY),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("Distorts time to midnight within a " + nightRange + " block radius", Style.EMPTY),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("Requires a Graveyard, Spider Lair and Dungeon.", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

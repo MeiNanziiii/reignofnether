@@ -9,6 +9,7 @@ import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import com.solegendary.reignofnether.util.MyRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -24,7 +25,6 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class PumpkinFarm extends Building {
 
-    public final static String buildingName = "Pumpkin Farm";
     public final static String structureName = "pumpkin_farm";
     public final static ResourceCost cost = ResourceCosts.PUMPKIN_FARM;
 
@@ -33,7 +33,7 @@ public class PumpkinFarm extends Building {
 
     public PumpkinFarm(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.PUMPKIN;
         this.icon = new ResourceLocation("minecraft", "textures/block/pumpkin_side.png");
@@ -55,23 +55,23 @@ public class PumpkinFarm extends Building {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                FormattedCharSequence.forward("\uE001  " + cost.wood + "  +  " + ResourceCosts.REPLANT_WOOD_COST + "  per  crop  planted", MyRenderer.iconStyle),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                PumpkinFarm.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/pumpkin_side.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == PumpkinFarm.class,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(PumpkinFarm.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(PumpkinFarm.buildingName, Style.EMPTY.withBold(true)),
-                        FormattedCharSequence.forward("\uE001  " + cost.wood + "  +  " + ResourceCosts.REPLANT_WOOD_COST + "  per  crop  planted", MyRenderer.iconStyle),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A pumpkin field that be can harvested to collect food.", Style.EMPTY),
-                        FormattedCharSequence.forward("Pumpkins don't need to replanted but farms cost more up front.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

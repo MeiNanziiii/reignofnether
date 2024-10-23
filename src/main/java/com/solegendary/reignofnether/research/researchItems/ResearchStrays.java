@@ -67,7 +67,7 @@ public class ResearchStrays extends ProductionItem {
             () -> false,
             () -> ProductionItem.itemIsBeingProduced(ResearchStrays.itemName, prodBuilding.ownerName) ||
                     ResearchClient.hasResearch(ResearchStrays.itemName),
-            () -> BuildingClientEvents.hasFinishedBuilding(Graveyard.buildingName),
+            () -> BuildingClientEvents.hasFinishedBuilding(Graveyard.structureName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(

@@ -8,6 +8,7 @@ import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -23,7 +24,6 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class DarkWatchtower extends Building implements GarrisonableBuilding {
 
-    public final static String buildingName = "Dark Watchtower";
     public final static String structureName = "dark_watchtower";
     public final static ResourceCost cost = ResourceCosts.DARK_WATCHTOWER;
 
@@ -31,7 +31,7 @@ public class DarkWatchtower extends Building implements GarrisonableBuilding {
 
     public DarkWatchtower(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.DEEPSLATE_BRICKS;
         this.icon = new ResourceLocation("minecraft", "textures/block/deepslate_bricks.png");
@@ -64,25 +64,23 @@ public class DarkWatchtower extends Building implements GarrisonableBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName, MAX_OCCUPANTS));
         return new AbilityButton(
-            DarkWatchtower.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/deepslate_bricks.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == DarkWatchtower.class,
             () -> false,
-            () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(DarkWatchtower.class),
             null,
-            List.of(
-                    FormattedCharSequence.forward(DarkWatchtower.buildingName, Style.EMPTY.withBold(true)),
-                    ResourceCosts.getFormattedCost(cost),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("An ominous tower that can garrison units.", Style.EMPTY),
-                    FormattedCharSequence.forward("Garrisoned ranged units have increased range.", Style.EMPTY),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("Can hold a maximum of " + MAX_OCCUPANTS + " units", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

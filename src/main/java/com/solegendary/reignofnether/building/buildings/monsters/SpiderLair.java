@@ -11,6 +11,7 @@ import com.solegendary.reignofnether.unit.units.monsters.PoisonSpiderProd;
 import com.solegendary.reignofnether.unit.units.monsters.SpiderProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -26,13 +27,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class SpiderLair extends ProductionBuilding {
 
-    public final static String buildingName = "Spider Lair";
     public final static String structureName = "spider_lair";
     public final static ResourceCost cost = ResourceCosts.SPIDER_LAIR;
 
     public SpiderLair(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.COBWEB;
         this.icon = new ResourceLocation("minecraft", "textures/block/cobweb.png");
@@ -61,24 +61,23 @@ public class SpiderLair extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                SpiderLair.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/cobweb.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == SpiderLair.class,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(Laboratory.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(Laboratory.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(SpiderLair.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(SpiderLair.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A silken cave to grow spiders, both large and poisonous.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Requires a Laboratory.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

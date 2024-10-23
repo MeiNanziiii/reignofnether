@@ -67,7 +67,7 @@ public class ResearchDrowned extends ProductionItem {
             () -> false,
             () -> ProductionItem.itemIsBeingProduced(ResearchDrowned.itemName, prodBuilding.ownerName) ||
                     ResearchClient.hasResearch(ResearchDrowned.itemName),
-            () -> BuildingClientEvents.hasFinishedBuilding(Graveyard.buildingName),
+            () -> BuildingClientEvents.hasFinishedBuilding(Graveyard.structureName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(

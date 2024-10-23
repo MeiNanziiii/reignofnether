@@ -16,6 +16,7 @@ import com.solegendary.reignofnether.tutorial.TutorialClientEvents;
 import com.solegendary.reignofnether.tutorial.TutorialStage;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -31,13 +32,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class OakStockpile extends AbstractStockpile {
 
-    public final static String buildingName = "Stockpile";
     public final static String structureName = "stockpile_oak";
     public final static ResourceCost cost = ResourceCosts.STOCKPILE;
     public ResourceName mostAbundantNearbyResource = ResourceName.NONE;
 
     public OakStockpile(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
-        super(buildingName, level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
+        super(structureName, level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
 
         this.startingBlockTypes.add(Blocks.OAK_LOG);
     }
@@ -49,23 +49,24 @@ public class OakStockpile extends AbstractStockpile {
     public Faction getFaction() {return Faction.VILLAGERS;}
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                OakStockpile.buildingName,
+                getKey(structureName),
                 new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/chest.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == OakStockpile.class,
                 () -> !TutorialClientEvents.isAtOrPastStage(TutorialStage.EXPLAIN_BUILDINGS),
-                () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.buildingName) ||
-                        BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.structureName) ||
+                        BuildingClientEvents.hasFinishedBuilding(Mausoleum.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(OakStockpile.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(OakStockpile.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Storage for units and players to drop off resources", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

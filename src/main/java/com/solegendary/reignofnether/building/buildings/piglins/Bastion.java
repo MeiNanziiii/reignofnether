@@ -11,6 +11,7 @@ import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -27,7 +28,6 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Bastion extends ProductionBuilding implements GarrisonableBuilding {
 
-    public final static String buildingName = "Bastion";
     public final static String structureName = "bastion";
     public final static ResourceCost cost = ResourceCosts.BASTION;
 
@@ -35,7 +35,7 @@ public class Bastion extends ProductionBuilding implements GarrisonableBuilding 
 
     public Bastion(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.CHISELED_POLISHED_BLACKSTONE;
         this.icon = new ResourceLocation("minecraft", "textures/block/chiseled_polished_blackstone.png");
@@ -78,29 +78,25 @@ public class Bastion extends ProductionBuilding implements GarrisonableBuilding 
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName, MAX_OCCUPANTS));
         return new AbilityButton(
-                Bastion.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/chiseled_polished_blackstone.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == Bastion.class,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(Portal.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(Portal.structureName) ||
                         BuildingClientEvents.hasFinishedBuilding("Civilian Portal") ||
                         BuildingClientEvents.hasFinishedBuilding("Military Portal") ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(Bastion.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(Bastion.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A fortified barracks to house military piglins,", Style.EMPTY),
-                        FormattedCharSequence.forward("enabling them to be produced at military portals.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Also garrisons up to 5 units.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Requires a Basic Portal", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

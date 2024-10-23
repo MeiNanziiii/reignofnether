@@ -14,6 +14,7 @@ import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -30,13 +31,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class HoglinStables extends ProductionBuilding {
 
-    public final static String buildingName = "Hoglin Stables";
     public final static String structureName = "hoglin_stables";
     public final static ResourceCost cost = ResourceCosts.HOGLIN_STABLES;
 
     public HoglinStables(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.CRIMSON_STEM;
         this.icon = new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/crimson_stem.png");
@@ -65,27 +65,25 @@ public class HoglinStables extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            HoglinStables.buildingName,
+            getKey(structureName),
             new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/crimson_stem.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == HoglinStables.class,
             () -> false,
-            () -> BuildingClientEvents.hasFinishedBuilding(Portal.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(Portal.structureName) ||
                     BuildingClientEvents.hasFinishedBuilding("Civilian Portal") ||
                     BuildingClientEvents.hasFinishedBuilding("Military Portal") ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(HoglinStables.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(HoglinStables.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("A shelter to keep Hoglins stabled in the overworld,", Style.EMPTY),
-                FormattedCharSequence.forward("enabling their production at military portals.", Style.EMPTY),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Requires a Basic Portal", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

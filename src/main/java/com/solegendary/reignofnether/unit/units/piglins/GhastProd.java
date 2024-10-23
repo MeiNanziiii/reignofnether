@@ -61,7 +61,7 @@ public class GhastProd extends ProductionItem {
                 hotkey,
                 () -> false,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(Fortress.buildingName),
+                () -> BuildingClientEvents.hasFinishedBuilding(Fortress.structureName),
                 () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
                 null,
                 tooltipLines

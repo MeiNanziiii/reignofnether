@@ -60,7 +60,7 @@ public class HoglinProd extends ProductionItem {
                 hotkey,
                 () -> false,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(HoglinStables.buildingName),
+                () -> BuildingClientEvents.hasFinishedBuilding(HoglinStables.structureName),
                 () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
                 null,
                 tooltipLines

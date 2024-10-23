@@ -68,7 +68,7 @@ public class ResearchHusks extends ProductionItem {
             () -> false,
             () -> ProductionItem.itemIsBeingProduced(ResearchHusks.itemName, prodBuilding.ownerName) ||
                     ResearchClient.hasResearch(ResearchHusks.itemName),
-            () -> BuildingClientEvents.hasFinishedBuilding(Graveyard.buildingName),
+            () -> BuildingClientEvents.hasFinishedBuilding(Graveyard.structureName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(

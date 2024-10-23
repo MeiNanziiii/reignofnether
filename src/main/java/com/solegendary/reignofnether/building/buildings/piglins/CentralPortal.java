@@ -9,6 +9,7 @@ import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.unit.units.piglins.GruntProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -27,7 +28,6 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class CentralPortal extends ProductionBuilding implements NetherConvertingBuilding {
 
-    public final static String buildingName = "Central Portal";
     public final static String structureName = "central_portal";
     public final static ResourceCost cost = ResourceCosts.CENTRAL_PORTAL;
 
@@ -56,7 +56,7 @@ public class CentralPortal extends ProductionBuilding implements NetherConvertin
 
     public CentralPortal(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), true);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.OBSIDIAN;
         this.icon = new ResourceLocation("minecraft", "textures/block/obsidian.png");
@@ -107,8 +107,15 @@ public class CentralPortal extends ProductionBuilding implements NetherConvertin
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                ResourceCosts.getFormattedPop(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                CentralPortal.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/obsidian.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == CentralPortal.class,
@@ -116,15 +123,7 @@ public class CentralPortal extends ProductionBuilding implements NetherConvertin
                 () -> true,
                 () -> BuildingClientEvents.setBuildingToPlace(CentralPortal.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(CentralPortal.buildingName + " (Capitol)", Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        ResourceCosts.getFormattedPop(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("The primary portal to transport piglin grunts from the nether.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("You may only have one capitol building at any time.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

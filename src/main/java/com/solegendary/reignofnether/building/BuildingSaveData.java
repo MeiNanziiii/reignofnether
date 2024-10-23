@@ -43,7 +43,7 @@ public class BuildingSaveData extends SavedData {
                 CompoundTag btag = (CompoundTag) ctag;
                 BlockPos pos = new BlockPos(btag.getInt("x"), btag.getInt("y"), btag.getInt("z"));
                 Level level = ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD);
-                String name = btag.getString("buildingName");
+                String id = btag.getString("buildingName");
                 String ownerName = btag.getString("ownerName");
                 Rotation rotation = Rotation.valueOf(btag.getString("rotation"));
                 BlockPos rallyPoint = new BlockPos(btag.getInt("rallyX"), btag.getInt("rallyY"), btag.getInt("rallyZ"));
@@ -51,9 +51,9 @@ public class BuildingSaveData extends SavedData {
                 boolean isBuilt = btag.getBoolean("isBuilt");
                 boolean isUpgraded = btag.getBoolean("isUpgraded");
                 Portal.PortalType portalType = Portal.PortalType.valueOf(btag.getString("portalType"));
-                data.buildings.add(new BuildingSave(pos, level, name, ownerName, rotation, rallyPoint,
+                data.buildings.add(new BuildingSave(pos, level, id, ownerName, rotation, rallyPoint,
                                                     isDiagonalBridge, isBuilt, isUpgraded, portalType));
-                System.out.println("BuildingSaveData.load: " + ownerName + "|" + name);
+                System.out.println("BuildingSaveData.load: " + ownerName + "|" + id);
             }
         }
         return data;
@@ -66,7 +66,7 @@ public class BuildingSaveData extends SavedData {
         ListTag list = new ListTag();
         this.buildings.forEach(b -> {
             CompoundTag cTag = new CompoundTag();
-            cTag.putString("buildingName", b.name);
+            cTag.putString("buildingName", b.id);
             cTag.putInt("x", b.originPos.getX());
             cTag.putInt("y", b.originPos.getY());
             cTag.putInt("z", b.originPos.getZ());
@@ -81,7 +81,7 @@ public class BuildingSaveData extends SavedData {
             cTag.putString("portalType", b.portalType != null ? b.portalType.name() : Portal.PortalType.BASIC.name());
             list.add(cTag);
 
-            System.out.println("BuildingSaveData.save: " + b.ownerName + "|" + b.name);
+            System.out.println("BuildingSaveData.save: " + b.ownerName + "|" + b.id);
         });
         tag.put("buildings", list);
         return tag;

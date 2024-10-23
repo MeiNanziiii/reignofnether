@@ -11,9 +11,8 @@ import com.solegendary.reignofnether.keybinds.Keybinding;
 import com.solegendary.reignofnether.research.ResearchClient;
 import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
-import com.solegendary.reignofnether.util.Faction;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -29,7 +28,7 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class SpruceBridge extends AbstractBridge {
 
-    public final static String buildingName = "Spruce Bridge";
+    public final static String structureName = "bridge_spruce";
     public final static String structureNameOrthogonal = "bridge_spruce_orthogonal";
     public final static String structureNameDiagonal = "bridge_spruce_diagonal";
     public final static ResourceCost cost = ResourceCosts.SPRUCE_BRIDGE;
@@ -38,7 +37,7 @@ public class SpruceBridge extends AbstractBridge {
         super(level, originPos, rotation, ownerName, diagonal,
                 getCulledBlocks(getAbsoluteBlockData(getRelativeBlockData(level, diagonal), level, originPos, rotation), level));
 
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.DARK_OAK_FENCE;
         this.icon = new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/spruce_fence.png");
@@ -57,28 +56,24 @@ public class SpruceBridge extends AbstractBridge {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
-        Minecraft MC = Minecraft.getInstance();
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                SpruceBridge.buildingName,
+                getKey(structureName),
                 new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/spruce_fence.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == SpruceBridge.class,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.buildingName) ||
-                        BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(TownCentre.structureName) ||
+                        BuildingClientEvents.hasFinishedBuilding(Mausoleum.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(SpruceBridge.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(SpruceBridge.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A bridge built to traverse water.", Style.EMPTY),
-                        FormattedCharSequence.forward("Must be connected to land or another bridge.", Style.EMPTY),
-                        FormattedCharSequence.forward("Can be built over lava (but isn't fireproof!)", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Bridges can be repaired or attacked by anyone.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

@@ -530,7 +530,7 @@ public class UnitClientEvents {
                         (BuildingClientEvents.getPlayerToBuildingRelationship(preSelBuilding) == Relationship.OWNED) ||
                         preSelBuilding instanceof AbstractBridge) {
 
-                    if (preSelBuilding.name.contains(" Farm") && preSelBuilding.isBuilt)
+                    if (preSelBuilding.id.contains("_farm") && preSelBuilding.isBuilt)
                         sendUnitCommand(UnitAction.FARM);
                     else if (BuildingUtils.isBuildingBuildable(true, preSelBuilding))
                         sendUnitCommand(UnitAction.BUILD_REPAIR);

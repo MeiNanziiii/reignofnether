@@ -15,6 +15,7 @@ import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.tutorial.TutorialClientEvents;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -31,13 +32,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Library extends ProductionBuilding {
 
-    public final static String buildingName = "Library";
     public final static String structureName = "library";
     public final static ResourceCost cost = ResourceCosts.LIBRARY;
 
     public Library(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.ENCHANTING_TABLE;
         this.icon = new ResourceLocation("minecraft", "textures/block/enchanting_table_top.png");
@@ -68,25 +68,23 @@ public class Library extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            Library.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/enchanting_table_top.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == Library.class,
             TutorialClientEvents::isEnabled,
-            () -> BuildingClientEvents.hasFinishedBuilding(ArcaneTower.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(ArcaneTower.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(Library.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(Library.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("An enchanting table surrounded by pillars of books.", Style.EMPTY),
-                FormattedCharSequence.forward("Used to research magic-related upgrades.", Style.EMPTY),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Requires an arcane tower.", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

@@ -31,8 +31,12 @@ import com.solegendary.reignofnether.util.Faction;
 import com.solegendary.reignofnether.util.MiscUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -48,7 +52,6 @@ import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.world.ForgeChunkManager;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.solegendary.reignofnether.building.BuildingUtils.*;
 import static com.solegendary.reignofnether.player.PlayerServerEvents.isRTSPlayer;
@@ -63,8 +66,7 @@ public abstract class Building {
     private final static int BASE_MS_PER_BUILD = 500; // time taken to build each block with 1 villager assigned; normally 500ms in real games
     public final float MELEE_DAMAGE_MULTIPLIER = 0.20f; // damage multiplier applied to melee attackers
 
-    public String name;
-    public static String structureName;
+    public String id;
     protected Level level; // directly return MC.level if it's clientside to avoid stale references
     public BlockPos originPos;
     public Rotation rotation;
@@ -806,5 +808,24 @@ public abstract class Building {
 
     public boolean isUpgraded() {
         return false;
+    }
+
+    public static MutableComponent getKey(String id) {
+        return Component.translatable("buildings.reignofnether." + id);
+    }
+
+    public static List<FormattedCharSequence> getLore(String id, Object ...args) {
+        Component component = Component.translatable("lore.reignofnether." + id, args);
+        String[] lines = component.getString().split("\n", -1);
+        List<FormattedCharSequence> formattedLines = new ArrayList<>();
+        for (String line : lines) {
+            if (line.isEmpty()) {
+                formattedLines.add(FormattedCharSequence.forward("", Style.EMPTY));
+            } else {
+                formattedLines.add(Component.literal(line).getVisualOrderText());
+            }
+        }
+
+        return formattedLines;
     }
 }

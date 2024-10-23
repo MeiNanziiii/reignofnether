@@ -8,6 +8,7 @@ import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -22,13 +23,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class HauntedHouse extends Building {
 
-    public final static String buildingName = "Haunted House";
     public final static String structureName = "haunted_house";
     public final static ResourceCost cost = ResourceCosts.HAUNTED_HOUSE;
 
     public HauntedHouse(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.DARK_OAK_LOG;
         this.icon = new ResourceLocation("minecraft", "textures/block/dark_oak_log.png");
@@ -50,23 +50,24 @@ public class HauntedHouse extends Building {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                ResourceCosts.getFormattedPop(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            HauntedHouse.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/dark_oak_log.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == HauntedHouse.class,
             () -> false,
-            () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(HauntedHouse.class),
             null,
-            List.of(
-                    FormattedCharSequence.forward(HauntedHouse.buildingName, Style.EMPTY.withBold(true)),
-                    ResourceCosts.getFormattedCost(cost),
-                    ResourceCosts.getFormattedPop(cost),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("A spooky house that provides population supply. ", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

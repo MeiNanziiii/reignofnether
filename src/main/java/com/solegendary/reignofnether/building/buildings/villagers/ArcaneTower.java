@@ -12,6 +12,7 @@ import com.solegendary.reignofnether.unit.units.villagers.EvokerProd;
 import com.solegendary.reignofnether.unit.units.villagers.WitchProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -28,13 +29,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class ArcaneTower extends ProductionBuilding {
 
-    public final static String buildingName = "Arcane Tower";
     public final static String structureName = "arcane_tower";
     public final static ResourceCost cost = ResourceCosts.ARCANE_TOWER;
 
     public ArcaneTower(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.AMETHYST_BLOCK;
         this.icon = new ResourceLocation("minecraft", "textures/block/amethyst_block.png");
@@ -66,24 +66,23 @@ public class ArcaneTower extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            ArcaneTower.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/amethyst_block.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == ArcaneTower.class,
             TutorialClientEvents::isEnabled,
-            () -> BuildingClientEvents.hasFinishedBuilding(Barracks.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(Barracks.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(ArcaneTower.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(ArcaneTower.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("A magical tower that is home to Witches and Evokers.", Style.EMPTY),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Requires a Barracks.", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

@@ -12,6 +12,7 @@ import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import com.solegendary.reignofnether.util.MyRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -27,13 +28,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class NetherwartFarm extends Building {
 
-    public final static String buildingName = "Netherwart Farm";
     public final static String structureName = "netherwart_farm";
     public final static ResourceCost cost = ResourceCosts.NETHERWART_FARM;
 
     public NetherwartFarm(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.NETHER_WART_BLOCK;
         this.icon = new ResourceLocation("minecraft", "textures/block/nether_wart_stage2.png");
@@ -55,23 +55,23 @@ public class NetherwartFarm extends Building {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                FormattedCharSequence.forward("\uE001  " + cost.wood + "  +  " + ResourceCosts.REPLANT_WOOD_COST + "  per  crop  planted", MyRenderer.iconStyle),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-                NetherwartFarm.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/nether_wart_stage2.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == NetherwartFarm.class,
                 () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(CentralPortal.buildingName) ||
+                () -> BuildingClientEvents.hasFinishedBuilding(CentralPortal.structureName) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(NetherwartFarm.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(NetherwartFarm.buildingName, Style.EMPTY.withBold(true)),
-                        FormattedCharSequence.forward("\uE001  " + cost.wood + "  +  " + ResourceCosts.REPLANT_WOOD_COST + "  per  crop  planted", MyRenderer.iconStyle),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A field of netherwart that can be farmed collect food.", Style.EMPTY),
-                        FormattedCharSequence.forward("Workers automatically use wood to replant while working.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

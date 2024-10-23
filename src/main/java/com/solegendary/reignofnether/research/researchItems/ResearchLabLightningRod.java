@@ -48,7 +48,7 @@ public class ResearchLabLightningRod extends ProductionItem {
             () -> false,
             () -> ProductionItem.itemIsBeingProduced(ResearchLabLightningRod.itemName, prodBuilding.ownerName) ||
                     (prodBuilding instanceof Laboratory lab && lab.isUpgraded()),
-            () -> BuildingClientEvents.hasFinishedBuilding(Dungeon.buildingName),
+            () -> BuildingClientEvents.hasFinishedBuilding(Dungeon.structureName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(

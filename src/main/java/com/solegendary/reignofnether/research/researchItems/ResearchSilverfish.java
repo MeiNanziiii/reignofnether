@@ -54,7 +54,7 @@ public class ResearchSilverfish extends ProductionItem {
             () -> false,
             () -> ProductionItem.itemIsBeingProduced(ResearchSilverfish.itemName, prodBuilding.ownerName) ||
                     ResearchClient.hasResearch(ResearchSilverfish.itemName),
-            () -> BuildingClientEvents.hasFinishedBuilding(Stronghold.buildingName),
+            () -> BuildingClientEvents.hasFinishedBuilding(Stronghold.structureName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(

@@ -10,6 +10,7 @@ import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.unit.units.monsters.CreeperProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -31,13 +32,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Dungeon extends ProductionBuilding {
 
-    public final static String buildingName = "Dungeon";
     public final static String structureName = "dungeon";
     public final static ResourceCost cost = ResourceCosts.DUNGEON;
 
     public Dungeon(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.SPAWNER;
         this.icon = new ResourceLocation("minecraft", "textures/block/spawner.png");
@@ -64,24 +64,23 @@ public class Dungeon extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            Dungeon.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/spawner.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == Dungeon.class,
             () -> false,
-            () -> BuildingClientEvents.hasFinishedBuilding(Laboratory.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(Laboratory.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(Dungeon.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(Dungeon.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("A fiery cage containing the power to create creepers.", Style.EMPTY),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Requires a Laboratory.", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

@@ -16,6 +16,7 @@ import com.solegendary.reignofnether.unit.interfaces.Unit;
 import com.solegendary.reignofnether.unit.units.villagers.IronGolemProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -34,13 +35,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class IronGolemBuilding extends Building {
 
-    public final static String buildingName = "Iron Golem";
     public final static String structureName = "iron_golem";
     public final static ResourceCost cost = ResourceCosts.IRON_GOLEM_BUILDING;
 
     public IronGolemBuilding(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.IRON_BLOCK;
         this.icon = new ResourceLocation("minecraft", "textures/block/iron_block.png");
@@ -78,8 +78,15 @@ public class IronGolemBuilding extends Building {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                ResourceCosts.getFormattedPopAndTime(IronGolemProd.cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            IronGolemBuilding.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/iron_block.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == IronGolemBuilding.class,
@@ -88,15 +95,7 @@ public class IronGolemBuilding extends Building {
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(IronGolemBuilding.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(IronGolemBuilding.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                ResourceCosts.getFormattedPopAndTime(IronGolemProd.cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("An Iron Golem that can be built in the field.", Style.EMPTY),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Requires research at a Blacksmith", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }

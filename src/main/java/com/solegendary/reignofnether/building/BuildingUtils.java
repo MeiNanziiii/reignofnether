@@ -96,48 +96,48 @@ public class BuildingUtils {
     }
 
     // given a string name return a new instance of that building
-    public static Building getNewBuilding(String buildingName, Level level, BlockPos pos, Rotation rotation, String ownerName, boolean isDiagonalBridge) {
-        if (buildingName.toLowerCase().contains("bridge"))
+    public static Building getNewBuilding(String structureName, Level level, BlockPos pos, Rotation rotation, String ownerName, boolean isDiagonalBridge) {
+        if (structureName.toLowerCase().contains("bridge"))
             ownerName = "";
 
         Building building = null;
-        switch(buildingName) {
-            case OakBridge.buildingName -> building = new OakBridge(level, pos, rotation, ownerName, isDiagonalBridge);
-            case SpruceBridge.buildingName -> building = new SpruceBridge(level, pos, rotation, ownerName, isDiagonalBridge);
-            case BlackstoneBridge.buildingName -> building = new BlackstoneBridge(level, pos, rotation, ownerName, isDiagonalBridge);
+        switch(structureName) {
+            case OakBridge.structureName -> building = new OakBridge(level, pos, rotation, ownerName, isDiagonalBridge);
+            case SpruceBridge.structureName -> building = new SpruceBridge(level, pos, rotation, ownerName, isDiagonalBridge);
+            case BlackstoneBridge.structureName -> building = new BlackstoneBridge(level, pos, rotation, ownerName, isDiagonalBridge);
 
-            case OakStockpile.buildingName -> building = new OakStockpile(level, pos, rotation, ownerName);
-            case SpruceStockpile.buildingName -> building = new SpruceStockpile(level, pos, rotation, ownerName);
-            case VillagerHouse.buildingName -> building = new VillagerHouse(level, pos, rotation, ownerName);
-            case Graveyard.buildingName -> building = new Graveyard(level, pos, rotation, ownerName);
-            case WheatFarm.buildingName -> building = new WheatFarm(level, pos, rotation, ownerName);
-            case Laboratory.buildingName -> building = new Laboratory(level, pos, rotation, ownerName);
-            case Barracks.buildingName -> building = new Barracks(level, pos, rotation, ownerName);
-            case PumpkinFarm.buildingName -> building = new PumpkinFarm(level, pos, rotation, ownerName);
-            case HauntedHouse.buildingName -> building = new HauntedHouse(level, pos, rotation, ownerName);
-            case Blacksmith.buildingName -> building = new Blacksmith(level, pos, rotation, ownerName);
-            case TownCentre.buildingName -> building = new TownCentre(level, pos, rotation, ownerName);
-            case IronGolemBuilding.buildingName -> building = new IronGolemBuilding(level, pos, rotation, ownerName);
-            case Mausoleum.buildingName -> building = new Mausoleum(level, pos, rotation, ownerName);
-            case SpiderLair.buildingName -> building = new SpiderLair(level, pos, rotation, ownerName);
-            case ArcaneTower.buildingName -> building = new ArcaneTower(level, pos, rotation, ownerName);
-            case Library.buildingName -> building = new Library(level, pos, rotation, ownerName);
-            case Dungeon.buildingName -> building = new Dungeon(level, pos, rotation, ownerName);
-            case Watchtower.buildingName -> building = new Watchtower(level, pos, rotation, ownerName);
-            case DarkWatchtower.buildingName -> building = new DarkWatchtower(level, pos, rotation, ownerName);
-            case Castle.buildingName -> building = new Castle(level, pos, rotation, ownerName);
-            case Stronghold.buildingName -> building = new Stronghold(level, pos, rotation, ownerName);
-            case CentralPortal.buildingName -> building = new CentralPortal(level, pos, rotation, ownerName);
-            case Portal.buildingName,
-                 Portal.buildingNameMilitary,
-                 Portal.buildingNameCivilian,
-                 Portal.buildingNameTransport -> building = new Portal(level, pos, rotation, ownerName);
-            case NetherwartFarm.buildingName -> building = new NetherwartFarm(level, pos, rotation, ownerName);
-            case Bastion.buildingName -> building = new Bastion(level, pos, rotation, ownerName);
-            case HoglinStables.buildingName -> building = new HoglinStables(level, pos, rotation, ownerName);
-            case FlameSanctuary.buildingName -> building = new FlameSanctuary(level, pos, rotation, ownerName);
-            case WitherShrine.buildingName -> building = new WitherShrine(level, pos, rotation, ownerName);
-            case Fortress.buildingName -> building = new Fortress(level, pos, rotation, ownerName);
+            case OakStockpile.structureName -> building = new OakStockpile(level, pos, rotation, ownerName);
+            case SpruceStockpile.structureName -> building = new SpruceStockpile(level, pos, rotation, ownerName);
+            case VillagerHouse.structureName -> building = new VillagerHouse(level, pos, rotation, ownerName);
+            case Graveyard.structureName -> building = new Graveyard(level, pos, rotation, ownerName);
+            case WheatFarm.structureName -> building = new WheatFarm(level, pos, rotation, ownerName);
+            case Laboratory.structureName -> building = new Laboratory(level, pos, rotation, ownerName);
+            case Barracks.structureName -> building = new Barracks(level, pos, rotation, ownerName);
+            case PumpkinFarm.structureName -> building = new PumpkinFarm(level, pos, rotation, ownerName);
+            case HauntedHouse.structureName -> building = new HauntedHouse(level, pos, rotation, ownerName);
+            case Blacksmith.structureName -> building = new Blacksmith(level, pos, rotation, ownerName);
+            case TownCentre.structureName -> building = new TownCentre(level, pos, rotation, ownerName);
+            case IronGolemBuilding.structureName -> building = new IronGolemBuilding(level, pos, rotation, ownerName);
+            case Mausoleum.structureName -> building = new Mausoleum(level, pos, rotation, ownerName);
+            case SpiderLair.structureName -> building = new SpiderLair(level, pos, rotation, ownerName);
+            case ArcaneTower.structureName -> building = new ArcaneTower(level, pos, rotation, ownerName);
+            case Library.structureName -> building = new Library(level, pos, rotation, ownerName);
+            case Dungeon.structureName -> building = new Dungeon(level, pos, rotation, ownerName);
+            case Watchtower.structureName -> building = new Watchtower(level, pos, rotation, ownerName);
+            case DarkWatchtower.structureName -> building = new DarkWatchtower(level, pos, rotation, ownerName);
+            case Castle.structureName -> building = new Castle(level, pos, rotation, ownerName);
+            case Stronghold.structureName -> building = new Stronghold(level, pos, rotation, ownerName);
+            case CentralPortal.structureName -> building = new CentralPortal(level, pos, rotation, ownerName);
+            case Portal.structureName,
+                 Portal.structureNameMilitary,
+                 Portal.structureNameCivilian,
+                 Portal.structureNameTransport -> building = new Portal(level, pos, rotation, ownerName);
+            case NetherwartFarm.structureName -> building = new NetherwartFarm(level, pos, rotation, ownerName);
+            case Bastion.structureName -> building = new Bastion(level, pos, rotation, ownerName);
+            case HoglinStables.structureName -> building = new HoglinStables(level, pos, rotation, ownerName);
+            case FlameSanctuary.structureName -> building = new FlameSanctuary(level, pos, rotation, ownerName);
+            case WitherShrine.structureName -> building = new WitherShrine(level, pos, rotation, ownerName);
+            case Fortress.structureName -> building = new Fortress(level, pos, rotation, ownerName);
         }
         if (building != null)
             building.setLevel(level);

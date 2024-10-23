@@ -14,6 +14,7 @@ import com.solegendary.reignofnether.tutorial.TutorialClientEvents;
 import com.solegendary.reignofnether.unit.units.villagers.RavagerProd;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -31,7 +32,6 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Castle extends ProductionBuilding implements GarrisonableBuilding {
 
-    public final static String buildingName = "Castle";
     public final static String structureName = "castle";
     public final static String upgradedStructureName = "castle_with_flag";
     public final static ResourceCost cost = ResourceCosts.CASTLE;
@@ -40,7 +40,7 @@ public class Castle extends ProductionBuilding implements GarrisonableBuilding {
 
     public Castle(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.COBBLESTONE;
         this.icon = new ResourceLocation("minecraft", "textures/block/cobblestone.png");
@@ -87,27 +87,25 @@ public class Castle extends ProductionBuilding implements GarrisonableBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName, MAX_OCCUPANTS));
         return new AbilityButton(
-                Castle.buildingName,
+                getKey(structureName),
                 new ResourceLocation("minecraft", "textures/block/cobblestone.png"),
                 hotkey,
                 () -> BuildingClientEvents.getBuildingToPlace() == Castle.class,
                 TutorialClientEvents::isEnabled,
-                () -> (BuildingClientEvents.hasFinishedBuilding(Barracks.buildingName) &&
-                        BuildingClientEvents.hasFinishedBuilding(Blacksmith.buildingName) &&
-                        BuildingClientEvents.hasFinishedBuilding(ArcaneTower.buildingName)) ||
+                () -> (BuildingClientEvents.hasFinishedBuilding(Barracks.structureName) &&
+                        BuildingClientEvents.hasFinishedBuilding(Blacksmith.structureName) &&
+                        BuildingClientEvents.hasFinishedBuilding(ArcaneTower.structureName)) ||
                         ResearchClient.hasCheat("modifythephasevariance"),
                 () -> BuildingClientEvents.setBuildingToPlace(Castle.class),
                 null,
-                List.of(
-                        FormattedCharSequence.forward(Castle.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("A grand castle that can produce ravagers ", Style.EMPTY),
-                        FormattedCharSequence.forward("and garrison up to " + MAX_OCCUPANTS + " units.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Requires a Blacksmith, Arcane Tower and a Barracks.", Style.EMPTY)
-                ),
+                tooltip,
                 null
         );
     }

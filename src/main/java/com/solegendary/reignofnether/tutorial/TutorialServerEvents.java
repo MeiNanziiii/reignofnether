@@ -199,7 +199,7 @@ public class TutorialServerEvents {
                 .filter(u -> u instanceof ZombieVillagerUnit)
                 .mapToInt(Entity::getId).toArray();
         if (builderUnitIds.length > 0) {
-            BuildingServerEvents.placeBuilding(Mausoleum.buildingName,
+            BuildingServerEvents.placeBuilding(Mausoleum.structureName,
                     new BlockPos(MAUSOLEUM_POS.getX(), MAUSOLEUM_POS.getY(), MAUSOLEUM_POS.getZ()),
                     Rotation.NONE, TUTORIAL_ENEMY_NAME, builderUnitIds, false, false);
         }
@@ -212,9 +212,9 @@ public class TutorialServerEvents {
 
         for (int i = 0; i < builderUnitIds.length; i++) {
             switch (i) {
-                case 0 -> BuildingServerEvents.placeBuilding(PumpkinFarm.buildingName, new BlockPos(FARM_POS_1),
+                case 0 -> BuildingServerEvents.placeBuilding(PumpkinFarm.structureName, new BlockPos(FARM_POS_1),
                         Rotation.NONE, TUTORIAL_ENEMY_NAME, new int[] {builderUnitIds[0]}, false, false);
-                case 1 -> BuildingServerEvents.placeBuilding(PumpkinFarm.buildingName, new BlockPos(FARM_POS_2),
+                case 1 -> BuildingServerEvents.placeBuilding(PumpkinFarm.structureName, new BlockPos(FARM_POS_2),
                         Rotation.CLOCKWISE_90, TUTORIAL_ENEMY_NAME, new int[] {builderUnitIds[1]}, false, false);
             }
         }
@@ -227,11 +227,11 @@ public class TutorialServerEvents {
 
         for (int i = 0; i < builderUnitIds.length; i++) {
             switch (i) {
-                case 0 -> BuildingServerEvents.placeBuilding(Graveyard.buildingName, new BlockPos(GRAVEYARD_POS),
+                case 0 -> BuildingServerEvents.placeBuilding(Graveyard.structureName, new BlockPos(GRAVEYARD_POS),
                         Rotation.NONE, TUTORIAL_ENEMY_NAME, new int[] {builderUnitIds[0]}, false, false);
-                case 1 -> BuildingServerEvents.placeBuilding(DarkWatchtower.buildingName, new BlockPos(TOWER_POS),
+                case 1 -> BuildingServerEvents.placeBuilding(DarkWatchtower.structureName, new BlockPos(TOWER_POS),
                         Rotation.NONE, TUTORIAL_ENEMY_NAME, new int[] {builderUnitIds[1]}, false, false);
-                case 2 -> BuildingServerEvents.placeBuilding(SpiderLair.buildingName, new BlockPos(SPIDER_LAIR_POS),
+                case 2 -> BuildingServerEvents.placeBuilding(SpiderLair.structureName, new BlockPos(SPIDER_LAIR_POS),
                         Rotation.NONE, TUTORIAL_ENEMY_NAME, new int[] {builderUnitIds[2]}, false, false);
             }
         }

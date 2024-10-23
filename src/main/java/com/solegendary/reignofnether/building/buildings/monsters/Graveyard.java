@@ -10,6 +10,7 @@ import com.solegendary.reignofnether.hud.AbilityButton;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -25,13 +26,12 @@ import static com.solegendary.reignofnether.building.BuildingUtils.getAbsoluteBl
 
 public class Graveyard extends ProductionBuilding {
 
-    public final static String buildingName = "Graveyard";
     public final static String structureName = "graveyard";
     public final static ResourceCost cost = ResourceCosts.GRAVEYARD;
 
     public Graveyard(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
         super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
-        this.name = buildingName;
+        this.id = structureName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.MOSSY_STONE_BRICKS;
         this.icon = new ResourceLocation("minecraft", "textures/block/mossy_stone_bricks.png");
@@ -62,22 +62,23 @@ public class Graveyard extends ProductionBuilding {
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
+        List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
+                getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY)
+        ));
+        tooltip.addAll(getLore(structureName));
         return new AbilityButton(
-            Graveyard.buildingName,
+            getKey(structureName),
             new ResourceLocation("minecraft", "textures/block/mossy_stone_bricks.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == Graveyard.class,
             () -> false,
-            () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) ||
+            () -> BuildingClientEvents.hasFinishedBuilding(Mausoleum.structureName) ||
                     ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(Graveyard.class),
             null,
-            List.of(
-                FormattedCharSequence.forward(Graveyard.buildingName, Style.EMPTY.withBold(true)),
-                ResourceCosts.getFormattedCost(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("A field of the dead that can raise Zombies and Skeletons", Style.EMPTY)
-            ),
+            tooltip,
             null
         );
     }
