@@ -57,7 +57,7 @@ public class NetherwartFarm extends Building {
     public static AbilityButton getBuildButton(Keybinding hotkey) {
         List<FormattedCharSequence> tooltip = new ArrayList<>(List.of(
                 getKey(structureName).withStyle(Style.EMPTY.withBold(true)).getVisualOrderText(),
-                FormattedCharSequence.forward("\uE001  " + cost.wood + "  +  " + ResourceCosts.REPLANT_WOOD_COST + "  per  crop  planted", MyRenderer.iconStyle),
+                FormattedCharSequence.forward(Component.translatable("lore.reignofnether.farm", "\uE001  " + cost.wood + "  +  " + ResourceCosts.REPLANT_WOOD_COST).getString(), MyRenderer.iconStyle),
                 FormattedCharSequence.forward("", Style.EMPTY)
         ));
         tooltip.addAll(getLore(structureName));

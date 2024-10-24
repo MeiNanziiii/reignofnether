@@ -36,6 +36,8 @@
   "sounds.reignofnether.neutral": "Neutral",
   "sounds.reignofnether.enemy": "Enemy",
 
+  "lore.reignofnether.farm": "%s per  crop  planted",
+
   "buildings.reignofnether.dark_watchtower": "Dark Watchtower",
   "lore.reignofnether.dark_watchtower": "An ominous tower that can garrison units.\nGarrisoned ranged units have increased range.\n\nCan hold a maximum of %s units.",
   "buildings.reignofnether.dungeon": "Dungeon",
